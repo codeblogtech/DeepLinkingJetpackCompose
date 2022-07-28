@@ -12,16 +12,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun HomePage(){
+fun SettingPage(){
 
     Box(modifier = Modifier
-        .background(Color.Gray)
-        .fillMaxSize()) {
+        .background(Color.Gray).fillMaxSize()) {
+        Text(text = "Setting Page ", modifier = Modifier.align(alignment = Alignment.Center))
 
-
-        
-        Text(text = "Home Page ", modifier = Modifier.align(alignment = Alignment.Center))
-        
     }
 
 }

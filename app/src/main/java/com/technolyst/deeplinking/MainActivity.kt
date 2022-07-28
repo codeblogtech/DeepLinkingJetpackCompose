@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.technolyst.deeplinking.pages.HomePage
+import com.technolyst.deeplinking.pages.NavigationPage
 import com.technolyst.deeplinking.ui.theme.DeepLinkingJetpackComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    NavigationPage()
                 }
             }
         }
