@@ -22,10 +22,17 @@ fun NavigationPage() {
     var navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
+    val parentRouteName = navBackStackEntry.value?.destination?.parent?.route
+
+
+
+
+
+
 
 
     Scaffold(topBar = {
-        SmallTopAppBar(title = { Text(text = "DeepLinking Demo $currentRoute") })
+        SmallTopAppBar(title = { Text(text = "$currentRoute") })
     }, bottomBar = {
 
         NavigationBar() {
@@ -52,7 +59,7 @@ fun NavigationPage() {
 
                     },
                     label = { Text(item) },
-                    selected = index == selectedItem.value,
+                    selected = parentRouteName == item,
                     onClick = {
                         selectedItem.value = index
                         navController.navigate(item, navOptions {
@@ -81,7 +88,11 @@ fun NavigationPage() {
 
                 navigation(startDestination = "HomePage", route = "Home",) {
                     composable("HomePage" ) {
-                        HomePage()
+                        HomePage(navController)
+                    }
+
+                    composable("HomeDetailPage"){
+                        HomeDetailPage(navController)
                     }
 
                 }
