@@ -18,6 +18,8 @@ import androidx.navigation.NavHostController
 @Composable
 fun ProductPage(navController: NavHostController) {
 
+    // Like HomePage in that we put text in center
+    // and its below put button on that click we navigate to product detail page by passing route name.
     Box(modifier = Modifier
         .background(Color.Gray)
         .fillMaxSize()) {

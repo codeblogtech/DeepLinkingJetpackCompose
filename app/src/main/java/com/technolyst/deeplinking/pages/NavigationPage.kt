@@ -17,111 +17,147 @@ import com.technolyst.deeplinking.R
 @Composable
 fun NavigationPage() {
 
+    //Create items for bottom bar.
+    val tabItems = listOf("Home", "Product", "Setting")
+    // Now we will handle the click event and save the last action.
+    // we will save the index value of tab when user click on Bar item.
+    // for that first we create mutableState for saving the index number.
+    // init with zero index.
+    // its mutable state value change on click event. lets code.
     var selectedItem = remember { mutableStateOf(0) }
-    val items = listOf("Home", "Product", "Setting")
+
+    // first create navController object.
     var navController = rememberNavController()
+
+    // get navBackStackEntry as State so we can refresh the ui onBackStack event.
     val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
+    // get selected route name and show on SmallTopBar.
+    // parent route name means nested graph route name.
     val parentRouteName = navBackStackEntry.value?.destination?.parent?.route
 
-
-
-
-
-
+    //Get current page name from backStackEntry
+    val routeName = navBackStackEntry.value?.destination?.route
 
 
     Scaffold(topBar = {
-        SmallTopAppBar(title = { Text(text = "$currentRoute") })
+        SmallTopAppBar(title = { Text(text = "$routeName") })
     }, bottomBar = {
+        // for bottom bar we will used NavigationBar composable.
 
         NavigationBar() {
-            items.forEachIndexed { index, item ->
-                NavigationBarItem(
+            // Now in this method block we will add NavigationBarItem.
+            // we have to keep the limited number of item here it should be
+            // between 3 to 5
+            // let's iterate "tabItems" array add Bar item.
+            // we have already added tab icon in project file in res folder.
 
+            tabItems.forEachIndexed { index, item ->
+                // that for each iterate the item one by one
+                //create NavigationBarItem
+                // right now we have set selected value false.
+
+                // selected value code update and check with mutableState
+                // we have to update selected on back stack event so we have
+                // update the logic for selected. item name as nested graph route name.
+
+                NavigationBarItem(
+                    selected = parentRouteName == item,
+                    onClick = {
+                        // on click we have to update mutableState value to
+                        //last action perform upon tab.
+                        // let's run.
+                        selectedItem.value = index
+                        // navigation graph is complete and now on tab click
+                        // select proper navigation graph.
+                        // i have put navigation graph name as our tab name so
+                        // we have just used item which also the name of navigation graph.
+
+                        // it's create large stack of destination.
+                        // let's limit this stack. using navOptions.
+                        navController.navigate(item,navOptions{
+                            // avoid building up a large stack of destinations
+                            //on the back stack as users select items.
+
+                            popUpTo(navController.graph.findStartDestination().id){
+                                saveState = true
+                            }
+
+                            // Avoid multiple copies fo the same destination when
+                            // reselecting the same item.
+                            launchSingleTop = true
+                            restoreState = true
+
+                        })
+
+
+                    },
                     icon = {
-                        if (item == "Home") {
-                            Icon(
+                        //in this lambda function set icon for bar item
+                        // by check item name and set icon according to that.
+                        when (item) {
+                            "Home" -> Icon(
                                 painter = painterResource(id = R.drawable.ic_action_home),
                                 contentDescription = null
                             )
-                        } else if (item == "Product") {
-                            Icon(
+                            "Product" -> Icon(
                                 painter = painterResource(id = R.drawable.ic_action_product),
                                 contentDescription = null
                             )
-                        } else {
-                            Icon(
+
+                            "Setting" -> Icon(
                                 painter = painterResource(id = R.drawable.ic_action_setting),
                                 contentDescription = null
                             )
                         }
 
                     },
-                    label = { Text(item) },
-                    selected = parentRouteName == item,
-                    onClick = {
-                        selectedItem.value = index
-                        navController.navigate(item, navOptions {
-
-                            // avoid building up a large stack of destinations
-                            // on the back stack as users select items
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            // Avoid multiple copies of the same destination when
-                            // reselecting the same item
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected item
-                            restoreState = true
-                        })
-                    }
-                )
+                    label = { Text(text = item) })
             }
+
         }
 
     }) {
-
         Box(modifier = Modifier.padding(it)) {
 
+            // in content area of Scaffold create NavHost.
+            // for demo we have already Created Home Page, Product Page , Setting page
             NavHost(navController = navController, startDestination = "Home") {
-
-                navigation(startDestination = "HomePage", route = "Home",) {
-                    composable("HomePage" ) {
-                        HomePage(navController)
+                //Create Nested Navigation .
+                navigation(startDestination = "HomePage", route = "Home") {
+                    // in Nested Navigation Add Composable Pages.
+                    composable("HomePage") {
+                        HomePage(navController = navController)
                     }
-
-                    composable("HomeDetailPage"){
-                        HomeDetailPage(navController)
+                    // Add another route in Home nested navigation.
+                    composable("HomeDetailPage") {
+                        HomeDetailPage(navController = navController)
                     }
-
                 }
+
+                // Now Add Product Nested Navigation Like Home Page.
 
                 navigation(startDestination = "ProductPage", route = "Product") {
-
+                    // Add pages.
                     composable("ProductPage") {
-                        ProductPage(navController)
+                        ProductPage(navController = navController)
                     }
-                    composable("ProductDetailPage"){
-                        ProductDetailPage(navController)
+                    composable("ProductDetailPage") {
+                        ProductDetailPage(navController = navController)
                     }
 
                 }
+
+                //Now Add final Tab Setting Page.
 
                 navigation(startDestination = "SettingPage", route = "Setting") {
                     composable("SettingPage") {
                         SettingPage()
                     }
-
                 }
-
 
             }
 
 
         }
-
     }
-
-
 }

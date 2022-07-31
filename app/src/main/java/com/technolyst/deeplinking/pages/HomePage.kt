@@ -18,11 +18,12 @@ import androidx.navigation.NavHostController
 @Composable
 fun HomePage(navController: NavHostController) {
 
+    // in Home Page
+    // we have put Text in center
+    // and it's below put button click on that click we have navigate to Home Detail Page.
     Box(modifier = Modifier
         .background(Color.Gray)
         .fillMaxSize()) {
-
-
 
         Box(modifier = Modifier
             .background(Color.Gray)
@@ -36,6 +37,8 @@ fun HomePage(navController: NavHostController) {
                 Text(text = "Home Page ")
 
                 Button(onClick = {
+                    // for navigate to another page we have used below method.
+                    // pass route name of second page.
                     navController.navigate("HomeDetailPage")
                 }) {
 
@@ -45,5 +48,7 @@ fun HomePage(navController: NavHostController) {
 
         }
     }
+
+
 
 }
