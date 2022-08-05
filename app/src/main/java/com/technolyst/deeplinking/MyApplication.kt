@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 
 //Create Singleton instance of DataStore Preference
 val Context.dataStore : DataStore<Preferences> by preferencesDataStore(name = "LocalStore")
 class MyApplication : Application() {
+
 
     override fun onCreate() {
         super.onCreate()

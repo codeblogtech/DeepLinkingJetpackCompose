@@ -7,7 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import androidx.navigation.navOptions
@@ -123,13 +127,13 @@ fun NavigationPage() {
             // for demo we have already Created Home Page, Product Page , Setting page
             NavHost(navController = navController, startDestination = "Home") {
                 //Create Nested Navigation .
-                navigation(startDestination = "HomePage", route = "Home") {
+                navigation(startDestination = "HomePage", route = "Home",deepLinks = listOf(NavDeepLink("deeplink://home"))) {
                     // in Nested Navigation Add Composable Pages.
                     composable("HomePage") {
                         HomePage(navController = navController)
                     }
                     // Add another route in Home nested navigation.
-                    composable("HomeDetailPage") {
+                    composable("HomeDetailPage" ,deepLinks = listOf(NavDeepLink("deeplink://homeDetail"))) {
                         HomeDetailPage(navController = navController)
                     }
                 }
@@ -138,10 +142,10 @@ fun NavigationPage() {
 
                 navigation(startDestination = "ProductPage", route = "Product") {
                     // Add pages.
-                    composable("ProductPage") {
+                    composable("ProductPage" , deepLinks = listOf(NavDeepLink("deeplink://product"))) {
                         ProductPage(navController = navController)
                     }
-                    composable("ProductDetailPage") {
+                    composable("ProductDetailPage",deepLinks = listOf(NavDeepLink("deeplink://productDetail"))) {
                         ProductDetailPage(navController = navController)
                     }
 
@@ -154,6 +158,7 @@ fun NavigationPage() {
                         SettingPage()
                     }
                 }
+
 
             }
 

@@ -4,14 +4,20 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.navigation.NavDeepLinkBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.technolyst.deeplinking.MainActivity
@@ -61,6 +67,7 @@ class TechFirebaseMessageService : FirebaseMessagingService() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun showNotificationOnStatusBar(data: Map<String, String>) {
 
         //Create Intent it will be launched when user tap on notification from status bar.
@@ -78,6 +85,20 @@ class TechFirebaseMessageService : FirebaseMessagingService() {
         }else{
             PendingIntent.getActivity(this, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         }
+
+
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            "deeplink://homeDetail".toUri(),
+            this,
+            MainActivity::class.java
+        )
+
+        pendingIntent = TaskStackBuilder.create(this).run {
+            addNextIntentWithParentStack(deepLinkIntent)
+            getPendingIntent(0, PendingIntent.FLAG_MUTABLE or FLAG_UPDATE_CURRENT)
+        }
+
 
         val builder = NotificationCompat.Builder(this,"Global").setAutoCancel(true)
             .setContentTitle(data["title"])
