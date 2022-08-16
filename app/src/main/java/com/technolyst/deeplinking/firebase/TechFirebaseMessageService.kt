@@ -1,15 +1,15 @@
 package com.technolyst.deeplinking.firebase
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_CANCEL_CURRENT
 import android.app.PendingIntent.FLAG_MUTABLE
-import android.content.Context
+import android.app.TaskStackBuilder
 import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -65,18 +65,37 @@ class TechFirebaseMessageService : FirebaseMessagingService() {
 
         //Create Intent it will be launched when user tap on notification from status bar.
         val intent = Intent(this, MainActivity::class.java).apply {
-            flags= Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            flags =
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
-        intent.putExtra("title",data["title"])
-        intent.putExtra("body",data["body"])
+        intent.putExtra("title", data["title"])
+        intent.putExtra("body", data["body"])
+        // in JSON payload we will send page name also so we can create page Uri deeplink
+        //Lets create deeplink Intent
+
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW, ("deeplink://" + data["page"]).toUri(),
+            this, MainActivity::class.java
+        )
 
         // it should be unqiue when push comes.
+        //Update pendingIntent code and used TaskStackBuilder to create pending intent for our jetpack compose navigation
         var requestCode = System.currentTimeMillis().toInt()
-        var pendingIntent : PendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.getActivity(this, requestCode,intent, FLAG_MUTABLE)
-        }else{
-            PendingIntent.getActivity(this, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+        var pendingIntent: PendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            TaskStackBuilder.create(this).run {
+                addNextIntentWithParentStack(deepLinkIntent).getPendingIntent(
+                    requestCode,
+                    FLAG_MUTABLE
+                )
+            }
+        } else {
+            TaskStackBuilder.create(this).run {
+                addNextIntentWithParentStack(deepLinkIntent).getPendingIntent(
+                    requestCode,
+                    FLAG_CANCEL_CURRENT
+                )
+            }
         }
 
         val builder = NotificationCompat.Builder(this,"Global").setAutoCancel(true)
@@ -91,6 +110,8 @@ class TechFirebaseMessageService : FirebaseMessagingService() {
         with(NotificationManagerCompat.from(this)){
             notify(requestCode,builder.build())
         }
+
+        //Let's run it.
 
 
     }

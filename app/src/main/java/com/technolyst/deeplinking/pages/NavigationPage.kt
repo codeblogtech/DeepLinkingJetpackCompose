@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import androidx.navigation.navOptions
@@ -121,15 +122,22 @@ fun NavigationPage() {
 
             // in content area of Scaffold create NavHost.
             // for demo we have already Created Home Page, Product Page , Setting page
+            //Deep Links
+            //Navigation Compose support implicit deep links that can be defined
+            // as Part of the composable() function as sell. add them as list using navDeepLink()
+
             NavHost(navController = navController, startDestination = "Home") {
                 //Create Nested Navigation .
-                navigation(startDestination = "HomePage", route = "Home") {
+                //Create DeepLink for HomePage
+                navigation(startDestination = "HomePage", route = "Home" ) {
                     // in Nested Navigation Add Composable Pages.
-                    composable("HomePage") {
+                    // i have create custom uri for deeplinking.
+                    composable("HomePage" , deepLinks = listOf(NavDeepLink("deeplink://home"))) {
                         HomePage(navController = navController)
                     }
                     // Add another route in Home nested navigation.
-                    composable("HomeDetailPage") {
+                    // Now Create for Another Composable
+                    composable("HomeDetailPage",deepLinks = listOf(NavDeepLink("deeplink://homeDetail")) ) {
                         HomeDetailPage(navController = navController)
                     }
                 }
@@ -138,10 +146,12 @@ fun NavigationPage() {
 
                 navigation(startDestination = "ProductPage", route = "Product") {
                     // Add pages.
-                    composable("ProductPage") {
+                    //Create Deeplink Uri for Product page
+                    composable("ProductPage",deepLinks = listOf(NavDeepLink("deeplink://product"))) {
                         ProductPage(navController = navController)
                     }
-                    composable("ProductDetailPage") {
+                    //Create for product detail page.
+                    composable("ProductDetailPage",deepLinks = listOf(NavDeepLink("deeplink://productDetail"))) {
                         ProductDetailPage(navController = navController)
                     }
 
